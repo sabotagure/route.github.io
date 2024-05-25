@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('fileInput').addEventListener('change', processCSV);
+    document.getElementById('calculateButton').addEventListener('click', processCSV);
 });
 
 function processCSV() {

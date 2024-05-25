@@ -26,7 +26,7 @@ function calculateRouteFromCSV(data) {
                          .filter(line => line)    // Filter out empty lines
                          .map(line => {
                              const [name, lat, lon] = line.split(',');
-                             return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
+                             return { name: name.trim(), lat: parseFloat(lat) || 0, lon: parseFloat(lon) || 0 };
                          });
 
     const route = calculateRoute(addresses);
@@ -75,16 +75,8 @@ function calculateTotalDistance(path, addresses) {
 }
 
 function calculateDistance(point1, point2) {
-    console.log("Point1:", point1);
-    console.log("Point2:", point2);
-
-    const { lat: lat1, lon: lon1 } = point1;
-    const { lat: lat2, lon: lon2 } = point2;
-
-    console.log("Lat1:", lat1);
-    console.log("Lon1:", lon1);
-    console.log("Lat2:", lat2);
-    console.log("Lon2:", lon2);
+    const { lat: lat1, lon: lon1 } = point1 || { lat: 0, lon: 0 };
+    const { lat: lat2, lon: lon2 } = point2 || { lat: 0, lon: 0 };
 
     const R = 6371; // Earth's radius in kilometers
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -111,6 +103,10 @@ function twoOptSwap(path, i, j) {
 
 function displayRoute(route) {
     const outputDiv = document.getElementById('output');
+    if (route.length === 0) {
+        outputDiv.innerHTML = 'No valid addresses found.';
+        return;
+    }
     let result = 'Optimal Route: <br>';
     for (let i = 0; i < route.length; i++) {
         result += route[i].name + '<br>';

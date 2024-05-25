@@ -11,7 +11,10 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
 });
 
 function processCSV(data) {
-    const addresses = data.split('\n').map(line => line.split(',').map(Number));
+    const addresses = data.split('\n').map(line => {
+        const [name, lat, lon] = line.split(',');
+        return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
+    });
     calculateRoute(addresses);
 }
 
@@ -45,7 +48,8 @@ function calculateRoute(addresses) {
     // Output the best path
     let result = 'Optimal Route: <br>';
     for (let i = 0; i < numAddresses; i++) {
-        result += addresses[bestPath[i]] + '<br>';
+        const index = bestPath[i];
+        result += addresses[index].name + '<br>';
     }
     result += 'Total Distance: ' + minDist.toFixed(2) + ' km';
     outputDiv.innerHTML = result;
@@ -64,15 +68,15 @@ function calculateTotalDistance(path, addresses) {
 }
 
 function calculateDistance(point1, point2) {
-    const [lat1, lon1] = point1;
-    const [lat2, lon2] = point2;
+    const { lat: lat1, lon: lon1 } = point1;
+    const { lat: lat2, lon: lon2 } = point2;
     const R = 6371; // Earth's radius in kilometers
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
               Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
     return distance;
 }

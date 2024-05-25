@@ -24,11 +24,14 @@ function parseCSV(data) {
     const lines = data.split('\n');
 
     // Parse CSV data
-    const addresses = lines.slice(1) // Skip header
-        .map(line => {
+    const addresses = [];
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line) {
             const [name, lat, lon] = line.split(',');
-            return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
-        });
+            addresses.push({ name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) });
+        }
+    }
 
     return addresses;
 }
@@ -42,6 +45,7 @@ function calculateRoute() {
     console.log('Calculating route...');
     const orderedAddresses = orderAddressesByProximity(addressesData);
     const route = findOptimalRoute(orderedAddresses);
+    console.log('Optimal route:', route);
     displayRoute(route);
 }
 

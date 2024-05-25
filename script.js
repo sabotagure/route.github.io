@@ -1,26 +1,49 @@
-document.getElementById('fileInput').addEventListener('change', function(event) {
-    const file = event.target.files[0];
+function processCSV() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
             const text = e.target.result;
-            processCSV(text);
+            calculateRouteFromCSV(text);
         };
         reader.readAsText(file);
     }
-});
+}
 
-function processCSV(data) {
-    const addresses = data.split('\n').map(line => {
-        const [name, lat, lon] = line.split(',');
-        return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
-    });
+function calculateRouteFromCSV(data) {
+    const addresses = data.split('\n')
+                         .map(line => line.trim()) // Trim whitespace
+                         .filter(line => line)    // Filter out empty lines
+                         .map(line => {
+                             const [name, lat, lon] = line.split(',');
+                             return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
+                         });
+
+    console.log("Addresses:", addresses); // Debugging output
+
     calculateRoute(addresses);
 }
 
 function calculateRoute(addresses) {
     const outputDiv = document.getElementById('output');
     const numAddresses = addresses.length;
+
+    // Check if addresses array is empty
+    if (numAddresses === 0) {
+        outputDiv.innerHTML = "No addresses provided.";
+        return;
+    }
+
+    // Check if any address object is undefined or missing properties
+    for (let i = 0; i < numAddresses; i++) {
+        const address = addresses[i];
+        if (!address || typeof address.name !== 'string' || typeof address.lat !== 'number' || typeof address.lon !== 'number') {
+            outputDiv.innerHTML = "Invalid address data.";
+            return;
+        }
+    }
+
     let minDist = Infinity;
     let bestPath = [];
 
@@ -91,87 +114,4 @@ function twoOptSwap(path, i, j) {
         j--;
     }
     return newPath;
-}
-function processCSV() {
-    const fileInput = document.getElementById('fileInput');
-    const file = fileInput.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const text = e.target.result;
-            calculateRouteFromCSV(text);
-        };
-        reader.readAsText(file);
-    }
-}
-
-function calculateRouteFromCSV(data) {
-    const addresses = data.split('\n').map(line => {
-        const [name, lat, lon] = line.split(',');
-        return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
-    });
-    calculateRoute(addresses);
-}
-
-// The rest of your JavaScript code...
-function processCSV() {
-    const fileInput = document.getElementById('fileInput');
-    const file = fileInput.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const text = e.target.result;
-            calculateRouteFromCSV(text);
-        };
-        reader.readAsText(file);
-    }
-}
-
-function calculateRouteFromCSV(data) {
-    const addresses = data.split('\n')
-                         .map(line => line.trim()) // Trim whitespace
-                         .filter(line => line)    // Filter out empty lines
-                         .map(line => {
-                             const [name, lat, lon] = line.split(',');
-                             return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
-                         });
-    calculateRoute(addresses);
-}
-
-// The rest of your JavaScript code...
-function calculateRouteFromCSV(data) {
-    const addresses = data.split('\n')
-                         .map(line => line.trim()) // Trim whitespace
-                         .filter(line => line)    // Filter out empty lines
-                         .map(line => {
-                             const [name, lat, lon] = line.split(',');
-                             return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
-                         });
-
-    console.log("Addresses:", addresses); // Debugging output
-
-    calculateRoute(addresses);
-}
-function calculateRoute(addresses) {
-    const outputDiv = document.getElementById('output');
-    const numAddresses = addresses.length;
-    let minDist = Infinity;
-    let bestPath = [];
-
-    // Check if addresses array is empty
-    if (numAddresses === 0) {
-        outputDiv.innerHTML = "No addresses provided.";
-        return;
-    }
-
-    // Check if any address object is undefined or missing properties
-    for (let i = 0; i < numAddresses; i++) {
-        const address = addresses[i];
-        if (!address || typeof address.name !== 'string' || typeof address.lat !== 'number' || typeof address.lon !== 'number') {
-            outputDiv.innerHTML = "Invalid address data.";
-            return;
-        }
-    }
-
-    // The rest of your calculateRoute function...
 }

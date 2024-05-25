@@ -91,11 +91,11 @@ function findOptimalRoute(addresses) {
     return route;
 }
 
-function calculateTotalDistance(route) {
+function calculateTotalDistance(route, addresses) {
     let totalDistance = 0;
     for (let i = 0; i < route.length - 1; i++) {
-        let fromPoint = route[i];
-        let toPoint = route[i + 1];
+        let fromPoint = addresses[route[i]];
+        let toPoint = addresses[route[i + 1]];
         if (fromPoint && toPoint) {
             totalDistance += calculateDistance(fromPoint, toPoint);
         } else {
@@ -106,7 +106,6 @@ function calculateTotalDistance(route) {
 }
 
 function calculateDistance(point1, point2) {
-    if (!point1 || !point2) return 0;
     const { lat: lat1, lon: lon1 } = point1;
     const { lat: lat2, lon: lon2 } = point2;
     const R = 6371; // Earth's radius in kilometers
@@ -138,6 +137,6 @@ function displayRoute(route) {
     route.forEach(point => {
         result += point.name + '<br>';
     });
-    result += 'Total Distance: ' + calculateTotalDistance(route).toFixed(2) + ' km';
+    result += 'Total Distance: ' + calculateTotalDistance(route, addressesData).toFixed(2) + ' km';
     outputDiv.innerHTML = result;
 }

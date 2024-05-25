@@ -61,7 +61,12 @@ function calculateRoute(addresses) {
 
     // Reconstruct the best route
     const route = [addresses[0]];
-    bestPath.forEach(index => route.push(addresses[index]));
+    bestPath.forEach(index => {
+        const address = addresses[index];
+        if (address) {
+            route.push(address);
+        }
+    });
 
     return route;
 }
@@ -73,8 +78,6 @@ function calculateTotalDistance(startIndex, path, addresses) {
         const nextIndex = path[i];
         const currentAddress = addresses[currentIndex];
         const nextAddress = addresses[nextIndex];
-        console.log("Current Address:", currentAddress);
-        console.log("Next Address:", nextAddress);
         if (currentAddress && nextAddress) {
             totalDistance += calculateDistance(currentAddress, nextAddress);
         }

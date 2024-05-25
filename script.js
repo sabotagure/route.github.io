@@ -92,3 +92,25 @@ function twoOptSwap(path, i, j) {
     }
     return newPath;
 }
+function processCSV() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const text = e.target.result;
+            calculateRouteFromCSV(text);
+        };
+        reader.readAsText(file);
+    }
+}
+
+function calculateRouteFromCSV(data) {
+    const addresses = data.split('\n').map(line => {
+        const [name, lat, lon] = line.split(',');
+        return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
+    });
+    calculateRoute(addresses);
+}
+
+// The rest of your JavaScript code...

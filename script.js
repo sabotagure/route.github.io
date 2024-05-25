@@ -30,6 +30,7 @@ function parseCSV(data) {
             return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
         });
 
+    console.log('Parsed addresses:', addresses);
     return addresses;
 }
 
@@ -41,7 +42,9 @@ function calculateRoute() {
 
     console.log('Calculating route...');
     const orderedAddresses = orderAddressesByProximity(addressesData);
+    console.log('Ordered addresses:', orderedAddresses);
     const route = findOptimalRoute(orderedAddresses);
+    console.log('Optimal route:', route);
     displayRoute(route);
 }
 
@@ -64,14 +67,18 @@ function findOptimalRoute(addresses) {
         path.push(i);
     }
 
+    console.log('Initial path:', path);
+
     // Calculate initial distance
     let initialDist = calculateTotalDistance(path, addresses);
+    console.log('Initial distance:', initialDist);
 
     // 2-opt algorithm
     for (let i = 0; i < numAddresses - 1; i++) {
         for (let j = i + 1; j < numAddresses; j++) {
             let newPath = twoOptSwap(path, i, j);
             let newDist = calculateTotalDistance(newPath, addresses);
+            console.log('New path:', newPath, 'New distance:', newDist);
             if (newDist < minDist) {
                 minDist = newDist;
                 bestPath = newPath;
@@ -89,7 +96,6 @@ function findOptimalRoute(addresses) {
         }
     });
 
-    console.log('Optimal route:', route);
     return route;
 }
 

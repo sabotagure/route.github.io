@@ -91,15 +91,17 @@ function findOptimalRoute(addresses) {
     return route;
 }
 
-function calculateTotalDistance(path, addresses) {
+function calculateTotalDistance(route) {
     let totalDistance = 0;
-    for (let i = 0; i < path.length - 1; i++) {
-        let fromIndex = path[i];
-        let toIndex = path[i + 1];
-        totalDistance += calculateDistance(addresses[fromIndex], addresses[toIndex]);
+    for (let i = 0; i < route.length - 1; i++) {
+        let fromPoint = route[i];
+        let toPoint = route[i + 1];
+        if (fromPoint && toPoint) {
+            totalDistance += calculateDistance(fromPoint, toPoint);
+        } else {
+            console.error('One of the points is undefined.');
+        }
     }
-    // Add distance from last address back to the start
-    totalDistance += calculateDistance(addresses[path[path.length - 1]], addresses[path[0]]);
     return totalDistance;
 }
 

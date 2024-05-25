@@ -29,6 +29,9 @@ function calculateRouteFromCSV(data) {
     // Calculate the most efficient route
     const route = calculateRoute(addresses);
 
+    // Log the route to check its contents
+    console.log('Route:', route);
+
     // Display the route
     displayRoute(route);
 }

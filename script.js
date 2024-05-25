@@ -12,7 +12,16 @@ function processCSV() {
 }
 
 function calculateRouteFromCSV(data) {
-    const addresses = data.split('\n')
+    const lines = data.split('\n');
+
+    // Check if the first line is a header
+    let startIdx = 0;
+    const firstLine = lines[0].trim().split(',');
+    if (firstLine.length !== 3 || isNaN(parseFloat(firstLine[1])) || isNaN(parseFloat(firstLine[2]))) {
+        startIdx = 1; // Skip the first line if it's a header
+    }
+
+    const addresses = lines.slice(startIdx)
                          .map(line => line.trim()) // Trim whitespace
                          .filter(line => line)    // Filter out empty lines
                          .map(line => {

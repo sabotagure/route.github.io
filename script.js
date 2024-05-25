@@ -136,4 +136,6 @@ function displayRoute(route) {
     route.forEach(point => {
         result += point.name + '<br>';
     });
-    result += 'Total Distance: ' + calculateTotal
+    result += 'Total Distance: ' + calculateTotalDistance(route).toFixed(2) + ' km';
+    outputDiv.innerHTML = result;
+}

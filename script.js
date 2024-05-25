@@ -71,13 +71,18 @@ function calculateTotalDistance(startIndex, path, addresses) {
     let currentIndex = startIndex;
     for (let i = 0; i < path.length; i++) {
         const nextIndex = path[i];
-        totalDistance += calculateDistance(addresses[currentIndex], addresses[nextIndex]);
+        const currentAddress = addresses[currentIndex];
+        const nextAddress = addresses[nextIndex];
+        if (currentAddress && nextAddress) {
+            totalDistance += calculateDistance(currentAddress, nextAddress);
+        }
         currentIndex = nextIndex;
     }
     return totalDistance;
 }
 
 function calculateDistance(point1, point2) {
+    if (!point1 || !point2) return 0;
     const { lat: lat1, lon: lon1 } = point1;
     const { lat: lat2, lon: lon2 } = point2;
     const R = 6371; // Earth's radius in kilometers

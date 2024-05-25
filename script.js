@@ -17,6 +17,7 @@ function processCSV() {
 }
 
 function calculateRouteFromCSV(data) {
+    console.log('Processing CSV data...');
     const lines = data.split('\n').map(line => line.trim());
 
     // Parse CSV data

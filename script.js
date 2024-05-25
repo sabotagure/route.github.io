@@ -21,7 +21,7 @@ function processCSV() {
 
 function parseCSV(data) {
     console.log('Parsing CSV data...');
-    const lines = data.split('\n').map(line => line.trim());
+    const lines = data.split('\n');
 
     // Parse CSV data
     const addresses = lines.slice(1) // Skip header
@@ -119,4 +119,24 @@ function calculateDistance(point1, point2) {
     return distance;
 }
 
-function twoOptSwap(path, i,
+function twoOptSwap(path, i, j) {
+    const newPath = [...path];
+    while (i < j) {
+        const temp = newPath[i];
+        newPath[i] = newPath[j];
+        newPath[j] = temp;
+        i++;
+        j--;
+    }
+    return newPath;
+}
+
+function displayRoute(route) {
+    const outputDiv = document.getElementById('output');
+    let result = 'Optimal Route: <br>';
+    route.forEach(point => {
+        result += `${point.name},${point.lat},${point.lon}<br>`;
+    });
+    result += 'Total Distance: ' + calculateTotalDistance(route, addressesData).toFixed(2) + ' km';
+    outputDiv.innerHTML = result;
+}

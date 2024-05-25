@@ -75,8 +75,17 @@ function calculateTotalDistance(path, addresses) {
 }
 
 function calculateDistance(point1, point2) {
+    console.log("Point1:", point1);
+    console.log("Point2:", point2);
+
     const { lat: lat1, lon: lon1 } = point1;
     const { lat: lat2, lon: lon2 } = point2;
+
+    console.log("Lat1:", lat1);
+    console.log("Lon1:", lon1);
+    console.log("Lat2:", lat2);
+    console.log("Lon2:", lon2);
+
     const R = 6371; // Earth's radius in kilometers
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;

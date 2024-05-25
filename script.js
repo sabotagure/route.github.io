@@ -16,24 +16,19 @@ function processCSV() {
 }
 
 function calculateRouteFromCSV(data) {
-    const lines = data.split('\n');
+    const lines = data.split('\n').map(line => line.trim());
 
-    // Check if the first line is a header
-    let startIdx = 0;
-    const firstLine = lines[0].trim().split(',');
-    if (firstLine.length !== 3 || isNaN(parseFloat(firstLine[1])) || isNaN(parseFloat(firstLine[2]))) {
-        startIdx = 1; // Skip the first line if it's a header
-    }
-
-    const addresses = lines.slice(startIdx)
-                         .map(line => line.trim()) // Trim whitespace
-                         .filter(line => line)    // Filter out empty lines
+    // Parse CSV data
+    const addresses = lines.slice(1) // Skip header
                          .map(line => {
                              const [name, lat, lon] = line.split(',');
-                             return { name: name.trim(), lat: parseFloat(lat) || 0, lon: parseFloat(lon) || 0 };
+                             return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
                          });
 
+    // Calculate the most efficient route
     const route = calculateRoute(addresses);
+
+    // Display the route
     displayRoute(route);
 }
 
@@ -42,20 +37,20 @@ function calculateRoute(addresses) {
     let minDist = Infinity;
     let bestPath = [];
 
-    // Initialize path with the order of addresses
+    // Generate initial path (starting with index 0)
     let path = [];
     for (let i = 0; i < numAddresses; i++) {
-        path.push(i);
+        if (i !== 0) path.push(i);
     }
 
     // Calculate initial distance
-    let initialDist = calculateTotalDistance(path, addresses);
+    let initialDist = calculateTotalDistance(0, path, addresses);
 
     // 2-opt algorithm
     for (let i = 0; i < numAddresses - 1; i++) {
         for (let j = i + 1; j < numAddresses; j++) {
             let newPath = twoOptSwap(path, i, j);
-            let newDist = calculateTotalDistance(newPath, addresses);
+            let newDist = calculateTotalDistance(0, newPath, addresses);
             if (newDist < minDist) {
                 minDist = newDist;
                 bestPath = newPath;
@@ -63,25 +58,27 @@ function calculateRoute(addresses) {
         }
     }
 
-    return bestPath.map(index => addresses[index]);
+    // Reconstruct the best route
+    const route = [addresses[0]];
+    bestPath.forEach(index => route.push(addresses[index]));
+
+    return route;
 }
 
-function calculateTotalDistance(path, addresses) {
+function calculateTotalDistance(startIndex, path, addresses) {
     let totalDistance = 0;
-    for (let i = 0; i < path.length - 1; i++) {
-        let fromIndex = path[i];
-        let toIndex = path[i + 1];
-        totalDistance += calculateDistance(addresses[fromIndex], addresses[toIndex]);
+    let currentIndex = startIndex;
+    for (let i = 0; i < path.length; i++) {
+        const nextIndex = path[i];
+        totalDistance += calculateDistance(addresses[currentIndex], addresses[nextIndex]);
+        currentIndex = nextIndex;
     }
-    // Add distance from last address back to the start
-    totalDistance += calculateDistance(addresses[path[path.length - 1]], addresses[path[0]]);
     return totalDistance;
 }
 
 function calculateDistance(point1, point2) {
-    const { lat: lat1, lon: lon1 } = point1 || { lat: 0, lon: 0 };
-    const { lat: lat2, lon: lon2 } = point2 || { lat: 0, lon: 0 };
-
+    const { lat: lat1, lon: lon1 } = point1;
+    const { lat: lat2, lon: lon2 } = point2;
     const R = 6371; // Earth's radius in kilometers
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -107,14 +104,10 @@ function twoOptSwap(path, i, j) {
 
 function displayRoute(route) {
     const outputDiv = document.getElementById('output');
-    if (route.length === 0) {
-        outputDiv.innerHTML = 'No valid addresses found.';
-        return;
-    }
     let result = 'Optimal Route: <br>';
-    for (let i = 0; i < route.length; i++) {
-        result += route[i].name + '<br>';
-    }
-    result += 'Total Distance: ' + calculateTotalDistance(route, route).toFixed(2) + ' km';
+    route.forEach(point => {
+        result += point.name + '<br>';
+    });
+    result += 'Total Distance: ' + calculateTotalDistance(0, Array.from({ length: route.length - 1 }, (_, i) => i + 1), route).toFixed(2) + ' km';
     outputDiv.innerHTML = result;
 }

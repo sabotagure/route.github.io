@@ -12,26 +12,36 @@ function processCSV() {
         const reader = new FileReader();
         reader.onload = function(e) {
             const text = e.target.result;
-            addressesData = parseCSV(text);
-            console.log('Addresses data:', addressesData);
+            parseCSV(text);
         };
         reader.readAsText(file);
     }
 }
 
-function parseCSV(data) {
+async function parseCSV(data) {
     console.log('Parsing CSV data...');
     const lines = data.split('\n').map(line => line.trim());
 
-    // Parse CSV data
-    const addresses = lines.slice(1) // Skip header
-        .map(line => {
+    // Skip header
+    const header = lines[0];
+    lines.shift();
+
+    // Parse CSV data in chunks
+    const chunkSize = 100; // Adjust as needed
+    for (let i = 0; i < lines.length; i += chunkSize) {
+        const chunk = lines.slice(i, i + chunkSize);
+        const addresses = chunk.map(line => {
             const [name, lat, lon] = line.split(',');
             return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
         });
+        if (i === 0) {
+            addressesData = addresses;
+        } else {
+            addressesData = addressesData.concat(addresses);
+        }
+    }
 
-    console.log('Parsed addresses:', addresses);
-    return addresses;
+    console.log('Parsed addresses:', addressesData);
 }
 
 function calculateRoute() {
@@ -41,69 +51,32 @@ function calculateRoute() {
     }
 
     console.log('Calculating route...');
-    const orderedAddresses = orderAddressesByProximity(addressesData);
-    console.log('Ordered addresses:', orderedAddresses);
-    const route = findOptimalRoute(orderedAddresses);
+    const route = findOptimalRoute(addressesData);
     console.log('Optimal route:', route);
     displayRoute(route);
 }
 
-function orderAddressesByProximity(addresses) {
-    console.log('Ordering addresses by proximity...');
-    // Placeholder for reordering addresses based on proximity
-    // Currently returning the original order
+function findOptimalRoute(addresses) {
+    console.log('Optimizing route...');
+    // Placeholder for optimizing route
     return addresses;
 }
 
-function findOptimalRoute(addresses) {
-    console.log('Optimizing route...');
-    const numAddresses = addresses.length;
-    let minDist = Infinity;
-    let bestPath = [];
-
-    // Initialize path with the order of addresses
-    let path = [];
-    for (let i = 0; i < numAddresses; i++) {
-        path.push(i);
-    }
-
-    console.log('Initial path:', path);
-
-    // Calculate initial distance
-    let initialDist = calculateTotalDistance(path, addresses);
-    console.log('Initial distance:', initialDist);
-
-    // 2-opt algorithm
-    for (let i = 0; i < numAddresses - 1; i++) {
-        for (let j = i + 1; j < numAddresses; j++) {
-            let newPath = twoOptSwap(path, i, j);
-            let newDist = calculateTotalDistance(newPath, addresses);
-            console.log('New path:', newPath, 'New distance:', newDist);
-            if (newDist < minDist) {
-                minDist = newDist;
-                bestPath = newPath;
-                console.log('Found better path:', bestPath, 'with distance:', minDist);
-            }
-        }
-    }
-
-    // Reconstruct the best route
-    const route = [];
-    bestPath.forEach(index => {
-        const address = addresses[index];
-        if (address) {
-            route.push(address);
-        }
+function displayRoute(route) {
+    const outputDiv = document.getElementById('output');
+    let result = 'Optimal Route: <br>';
+    route.forEach(point => {
+        result += `${point.name},${point.lat},${point.lon}<br>`;
     });
-
-    return route;
+    result += 'Total Distance: ' + calculateTotalDistance(route).toFixed(2) + ' km';
+    outputDiv.innerHTML = result;
 }
 
-function calculateTotalDistance(route, addresses) {
+function calculateTotalDistance(route) {
     let totalDistance = 0;
     for (let i = 0; i < route.length - 1; i++) {
-        let fromPoint = addresses[route[i]];
-        let toPoint = addresses[route[i + 1]];
+        let fromPoint = route[i];
+        let toPoint = route[i + 1];
         if (fromPoint && toPoint) {
             totalDistance += calculateDistance(fromPoint, toPoint);
         } else {
@@ -125,26 +98,4 @@ function calculateDistance(point1, point2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
     return distance;
-}
-
-function twoOptSwap(path, i, j) {
-    const newPath = [...path];
-    while (i < j) {
-        const temp = newPath[i];
-        newPath[i] = newPath[j];
-        newPath[j] = temp;
-        i++;
-        j--;
-    }
-    return newPath;
-}
-
-function displayRoute(route) {
-    const outputDiv = document.getElementById('output');
-    let result = 'Optimal Route: <br>';
-    route.forEach(point => {
-        result += `${point.name},${point.lat},${point.lon}<br>`;
-    });
-    result += 'Total Distance: ' + calculateTotalDistance(route, addressesData).toFixed(2) + ' km';
-    outputDiv.innerHTML = result;
 }

@@ -1,4 +1,4 @@
-let addressesData;
+let addressesData = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('fileInput').addEventListener('change', processCSV);
@@ -18,34 +18,22 @@ function processCSV() {
     }
 }
 
-async function parseCSV(data) {
+function parseCSV(data) {
     console.log('Parsing CSV data...');
     const lines = data.split('\n').map(line => line.trim());
 
-    // Skip header
-    const header = lines[0];
-    lines.shift();
-
-    // Parse CSV data in chunks
-    const chunkSize = 100; // Adjust as needed
-    for (let i = 0; i < lines.length; i += chunkSize) {
-        const chunk = lines.slice(i, i + chunkSize);
-        const addresses = chunk.map(line => {
-            const [name, lat, lon] = line.split(',');
-            return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
-        });
-        if (i === 0) {
-            addressesData = addresses;
-        } else {
-            addressesData = addressesData.concat(addresses);
-        }
-    }
+    // Parse CSV data
+    lines.forEach(line => {
+        const [name, lat, lon] = line.split(',');
+        const address = { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
+        addressesData.push(address);
+    });
 
     console.log('Parsed addresses:', addressesData);
 }
 
 function calculateRoute() {
-    if (!addressesData) {
+    if (!addressesData.length) {
         console.error('No addresses data found.');
         return;
     }

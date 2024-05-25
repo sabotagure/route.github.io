@@ -1,4 +1,4 @@
-let addressesData = [];
+let addressesData;
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('fileInput').addEventListener('change', processCSV);
@@ -21,23 +21,20 @@ function processCSV() {
 
 function parseCSV(data) {
     console.log('Parsing CSV data...');
-    const lines = data.split('\n');
+    const lines = data.split('\n').map(line => line.trim());
 
     // Parse CSV data
-    const addresses = [];
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (line) {
+    const addresses = lines.slice(1) // Skip header
+        .map(line => {
             const [name, lat, lon] = line.split(',');
-            addresses.push({ name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) });
-        }
-    }
+            return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
+        });
 
     return addresses;
 }
 
 function calculateRoute() {
-    if (!addressesData.length) {
+    if (!addressesData) {
         console.error('No addresses data found.');
         return;
     }
@@ -45,7 +42,6 @@ function calculateRoute() {
     console.log('Calculating route...');
     const orderedAddresses = orderAddressesByProximity(addressesData);
     const route = findOptimalRoute(orderedAddresses);
-    console.log('Optimal route:', route);
     displayRoute(route);
 }
 
@@ -79,6 +75,7 @@ function findOptimalRoute(addresses) {
             if (newDist < minDist) {
                 minDist = newDist;
                 bestPath = newPath;
+                console.log('Found better path:', bestPath, 'with distance:', minDist);
             }
         }
     }
@@ -92,6 +89,7 @@ function findOptimalRoute(addresses) {
         }
     });
 
+    console.log('Optimal route:', route);
     return route;
 }
 

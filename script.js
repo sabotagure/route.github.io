@@ -135,7 +135,7 @@ function displayRoute(route) {
     const outputDiv = document.getElementById('output');
     let result = 'Optimal Route: <br>';
     route.forEach(point => {
-        result += point.name + '<br>';
+        result += `${point.name},${point.lat},${point.lon}<br>`;
     });
     result += 'Total Distance: ' + calculateTotalDistance(route, addressesData).toFixed(2) + ' km';
     outputDiv.innerHTML = result;

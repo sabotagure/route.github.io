@@ -22,28 +22,12 @@ function calculateRouteFromCSV(data) {
 
     console.log("Addresses:", addresses); // Debugging output
 
-    calculateRoute(addresses);
+    const route = calculateRoute(addresses);
+    displayRoute(route);
 }
 
 function calculateRoute(addresses) {
-    const outputDiv = document.getElementById('output');
     const numAddresses = addresses.length;
-
-    // Check if addresses array is empty
-    if (numAddresses === 0) {
-        outputDiv.innerHTML = "No addresses provided.";
-        return;
-    }
-
-    // Check if any address object is undefined or missing properties
-    for (let i = 0; i < numAddresses; i++) {
-        const address = addresses[i];
-        if (!address || typeof address.name !== 'string' || typeof address.lat !== 'number' || typeof address.lon !== 'number') {
-            outputDiv.innerHTML = "Invalid address data.";
-            return;
-        }
-    }
-
     let minDist = Infinity;
     let bestPath = [];
 
@@ -68,14 +52,7 @@ function calculateRoute(addresses) {
         }
     }
 
-    // Output the best path
-    let result = 'Optimal Route: <br>';
-    for (let i = 0; i < numAddresses; i++) {
-        const index = bestPath[i];
-        result += addresses[index].name + '<br>';
-    }
-    result += 'Total Distance: ' + minDist.toFixed(2) + ' km';
-    outputDiv.innerHTML = result;
+    return bestPath.map(index => addresses[index]);
 }
 
 function calculateTotalDistance(path, addresses) {
@@ -114,4 +91,14 @@ function twoOptSwap(path, i, j) {
         j--;
     }
     return newPath;
+}
+
+function displayRoute(route) {
+    const outputDiv = document.getElementById('output');
+    let result = 'Optimal Route: <br>';
+    for (let i = 0; i < route.length; i++) {
+        result += route[i].name + '<br>';
+    }
+    result += 'Total Distance: ' + calculateTotalDistance(route, route).toFixed(2) + ' km';
+    outputDiv.innerHTML = result;
 }

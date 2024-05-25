@@ -139,3 +139,39 @@ function calculateRouteFromCSV(data) {
 }
 
 // The rest of your JavaScript code...
+function calculateRouteFromCSV(data) {
+    const addresses = data.split('\n')
+                         .map(line => line.trim()) // Trim whitespace
+                         .filter(line => line)    // Filter out empty lines
+                         .map(line => {
+                             const [name, lat, lon] = line.split(',');
+                             return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
+                         });
+
+    console.log("Addresses:", addresses); // Debugging output
+
+    calculateRoute(addresses);
+}
+function calculateRoute(addresses) {
+    const outputDiv = document.getElementById('output');
+    const numAddresses = addresses.length;
+    let minDist = Infinity;
+    let bestPath = [];
+
+    // Check if addresses array is empty
+    if (numAddresses === 0) {
+        outputDiv.innerHTML = "No addresses provided.";
+        return;
+    }
+
+    // Check if any address object is undefined or missing properties
+    for (let i = 0; i < numAddresses; i++) {
+        const address = addresses[i];
+        if (!address || typeof address.name !== 'string' || typeof address.lat !== 'number' || typeof address.lon !== 'number') {
+            outputDiv.innerHTML = "Invalid address data.";
+            return;
+        }
+    }
+
+    // The rest of your calculateRoute function...
+}

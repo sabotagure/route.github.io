@@ -40,8 +40,16 @@ function calculateRoute() {
     }
 
     console.log('Calculating route...');
-    const route = findOptimalRoute(addressesData);
+    const orderedAddresses = orderAddressesByProximity(addressesData);
+    const route = findOptimalRoute(orderedAddresses);
     displayRoute(route);
+}
+
+function orderAddressesByProximity(addresses) {
+    console.log('Ordering addresses by proximity...');
+    // Placeholder for reordering addresses based on proximity
+    // Currently returning the original order
+    return addresses;
 }
 
 function findOptimalRoute(addresses) {

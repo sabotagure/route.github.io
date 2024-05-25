@@ -39,9 +39,38 @@ function calculateRoute() {
     }
 
     console.log('Calculating route...');
-    const route = findOptimalRoute(addressesData);
+    const orderedAddresses = orderAddressesByProximity(addressesData);
+    const route = findOptimalRoute(orderedAddresses);
     console.log('Optimal route:', route);
     displayRoute(route);
+}
+
+function orderAddressesByProximity(addresses) {
+    console.log('Ordering addresses by proximity...');
+    const numAddresses = addresses.length;
+    const orderedAddresses = [];
+    const remainingAddresses = [...addresses];
+
+    let currentAddress = remainingAddresses.shift(); // Start with the first address
+    orderedAddresses.push(currentAddress);
+
+    while (remainingAddresses.length > 0) {
+        let nearestIndex = -1;
+        let nearestDistance = Infinity;
+
+        remainingAddresses.forEach((address, index) => {
+            const distance = calculateDistance(currentAddress, address);
+            if (distance < nearestDistance) {
+                nearestIndex = index;
+                nearestDistance = distance;
+            }
+        });
+
+        currentAddress = remainingAddresses.splice(nearestIndex, 1)[0];
+        orderedAddresses.push(currentAddress);
+    }
+
+    return orderedAddresses;
 }
 
 function findOptimalRoute(addresses) {

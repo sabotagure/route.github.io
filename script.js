@@ -29,8 +29,6 @@ function calculateRouteFromCSV(data) {
                              return { name: name.trim(), lat: parseFloat(lat), lon: parseFloat(lon) };
                          });
 
-    console.log("Addresses:", addresses); // Debugging output
-
     const route = calculateRoute(addresses);
     displayRoute(route);
 }

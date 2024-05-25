@@ -1,3 +1,7 @@
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('fileInput').addEventListener('change', processCSV);
+});
+
 function processCSV() {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];

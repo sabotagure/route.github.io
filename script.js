@@ -1,4 +1,4 @@
-let addressesData;
+let addressesData = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('fileInput').addEventListener('change', processCSV);
@@ -34,7 +34,7 @@ function parseCSV(data) {
 }
 
 function calculateRoute() {
-    if (!addressesData) {
+    if (!addressesData.length) {
         console.error('No addresses data found.');
         return;
     }
@@ -119,24 +119,4 @@ function calculateDistance(point1, point2) {
     return distance;
 }
 
-function twoOptSwap(path, i, j) {
-    const newPath = [...path];
-    while (i < j) {
-        const temp = newPath[i];
-        newPath[i] = newPath[j];
-        newPath[j] = temp;
-        i++;
-        j--;
-    }
-    return newPath;
-}
-
-function displayRoute(route) {
-    const outputDiv = document.getElementById('output');
-    let result = 'Optimal Route: <br>';
-    route.forEach(point => {
-        result += `${point.name},${point.lat},${point.lon}<br>`;
-    });
-    result += 'Total Distance: ' + calculateTotalDistance(route, addressesData).toFixed(2) + ' km';
-    outputDiv.innerHTML = result;
-}
+function twoOptSwap(path, i,

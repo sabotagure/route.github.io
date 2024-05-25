@@ -47,17 +47,17 @@ function calculateRoute(addresses) {
     // Generate initial path (starting with index 0)
     let path = [];
     for (let i = 0; i < numAddresses; i++) {
-        if (i !== 0) path.push(i);
+        path.push(i);
     }
 
     // Calculate initial distance
-    let initialDist = calculateTotalDistance(0, path, addresses);
+    let initialDist = calculateTotalDistance(path, addresses);
 
     // 2-opt algorithm
     for (let i = 0; i < numAddresses - 1; i++) {
         for (let j = i + 1; j < numAddresses; j++) {
             let newPath = twoOptSwap(path, i, j);
-            let newDist = calculateTotalDistance(0, newPath, addresses);
+            let newDist = calculateTotalDistance(newPath, addresses);
             if (newDist < minDist) {
                 minDist = newDist;
                 bestPath = newPath;
@@ -66,7 +66,7 @@ function calculateRoute(addresses) {
     }
 
     // Reconstruct the best route
-    const route = [addresses[0]];
+    const route = [];
     bestPath.forEach(index => {
         const address = addresses[index];
         if (address) {
@@ -77,18 +77,15 @@ function calculateRoute(addresses) {
     return route;
 }
 
-function calculateTotalDistance(startIndex, path, addresses) {
+function calculateTotalDistance(path, addresses) {
     let totalDistance = 0;
-    let currentIndex = startIndex;
-    for (let i = 0; i < path.length; i++) {
-        const nextIndex = path[i];
-        const currentAddress = addresses[currentIndex];
-        const nextAddress = addresses[nextIndex];
-        if (currentAddress && nextAddress) {
-            totalDistance += calculateDistance(currentAddress, nextAddress);
-        }
-        currentIndex = nextIndex;
+    for (let i = 0; i < path.length - 1; i++) {
+        let fromIndex = path[i];
+        let toIndex = path[i + 1];
+        totalDistance += calculateDistance(addresses[fromIndex], addresses[toIndex]);
     }
+    // Add distance from last address back to the start
+    totalDistance += calculateDistance(addresses[path[path.length - 1]], addresses[path[0]]);
     return totalDistance;
 }
 
@@ -125,6 +122,6 @@ function displayRoute(route) {
     route.forEach(point => {
         result += point.name + '<br>';
     });
-    result += 'Total Distance: ' + calculateTotalDistance(0, Array.from({ length: route.length - 1 }, (_, i) => i + 1), route).toFixed(2) + ' km';
+    result += 'Total Distance: ' + calculateTotalDistance(Array.from({ length: route.length }, (_, i) => i), route).toFixed(2) + ' km';
     outputDiv.innerHTML = result;
 }
